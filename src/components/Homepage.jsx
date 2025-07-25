@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import SearchInput from '../components/SearchInput';
-import CharacterList from '../components/CharacterList';
-import Pagination from '../components/Pagination';
+import SearchInput from './SearchInput';
+import CharacterList from './CharacterList';
+import Pagination from './Pagination';
 
 const PAGE_SIZE = 10;
 
@@ -11,13 +10,8 @@ export default function Homepage() {
   const [filteredCharacters, setFilteredCharacters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const [searchParams, setSearchParams] = useSearchParams();
-  const page = parseInt(searchParams.get('page')) || 1;
-  const query = searchParams.get('search') || '';
-  const [searchTerm, setSearchTerm] = useState(query);
-
-  // Load from localStorage or API
+  const [page, setPage] = useState(1);    
+  const [searchTerm, setSearchTerm] = useState('');
   useEffect(() => {
     async function loadData() {
       setLoading(true);
@@ -26,8 +20,7 @@ export default function Homepage() {
       try {
         const cached = localStorage.getItem('allCharacters');
         if (cached) {
-          const parsed = JSON.parse(cached);
-          setAllCharacters(parsed);
+          setAllCharacters(JSON.parse(cached));
         } else {
           const res = await fetch('http://localhost:5000/api/characters?all=true');
           const data = await res.json();
@@ -45,16 +38,17 @@ export default function Homepage() {
     loadData();
   }, []);
 
-  // Filter & paginate based on query and page
+  // Filter whenever searchTerm changes
   useEffect(() => {
-    const q = query.toLowerCase();
+    const q = searchTerm.toLowerCase();
     const filtered = allCharacters.filter(char =>
       char.name.toLowerCase().includes(q)
     );
     setFilteredCharacters(filtered);
-  }, [allCharacters, query]);
+    setPage(1); 
+  }, [allCharacters, searchTerm]);
 
-  // Pagination
+  // Pagination slice
   const paginatedCharacters = filteredCharacters.slice(
     (page - 1) * PAGE_SIZE,
     page * PAGE_SIZE
@@ -62,32 +56,20 @@ export default function Homepage() {
 
   const totalPages = Math.ceil(filteredCharacters.length / PAGE_SIZE);
 
-  // Sync search term in input
-  useEffect(() => {
-    setSearchTerm(query);
-  }, [query]);
-
+  // Called when user types in search box
   const onSearch = (searchValue) => {
-    if (searchValue) {
-      setSearchParams({ search: searchValue, page: '1' });
-    } else {
-      setSearchParams({ page: '1' });
-    }
+    setSearchTerm(searchValue);
   };
 
   const handlePrevious = () => {
     if (page > 1) {
-      const params = { page: (page - 1).toString() };
-      if (query) params.search = query;
-      setSearchParams(params);
+      setPage(page - 1);
     }
   };
 
   const handleNext = () => {
     if (page < totalPages) {
-      const params = { page: (page + 1).toString() };
-      if (query) params.search = query;
-      setSearchParams(params);
+      setPage(page + 1);
     }
   };
 
@@ -113,14 +95,13 @@ export default function Homepage() {
         <CharacterList characters={paginatedCharacters} />
 
         {!loading && filteredCharacters.length > 0 && (
-  <Pagination
-    page={page}
-    totalPages={totalPages}
-    onPrevious={handlePrevious}
-    onNext={handleNext}
-  />
-)}
-
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            onPrevious={handlePrevious}
+            onNext={handleNext}
+          />
+        )}
       </div>
     </div>
   );

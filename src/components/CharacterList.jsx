@@ -12,7 +12,7 @@ export default function CharacterList({ characters, loading }) {
   }
 
   if (!characters || characters.length === 0) {
-    return null; // The fallback "No characters found" is now handled in the parent
+    return null;
   }
 
   return (
