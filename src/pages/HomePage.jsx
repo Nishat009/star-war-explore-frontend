@@ -6,7 +6,7 @@ import Pagination from '../components/Pagination';
 
 const PAGE_SIZE = 10;
 
-export default function HomePage() {
+export default function Homepage() {
   const [allCharacters, setAllCharacters] = useState([]);
   const [filteredCharacters, setFilteredCharacters] = useState([]);
   const [loading, setLoading] = useState(true);
