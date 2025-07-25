@@ -22,7 +22,7 @@ export default function Homepage() {
         if (cached) {
           setAllCharacters(JSON.parse(cached));
         } else {
-          const res = await fetch('http://localhost:5000/api/characters?all=true');
+          const res = await fetch('https://sw-be.onrender.com/api/characters?all=true');
           const data = await res.json();
           localStorage.setItem('allCharacters', JSON.stringify(data.characters));
           setAllCharacters(data.characters);
