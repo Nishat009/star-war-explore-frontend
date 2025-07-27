@@ -11,7 +11,7 @@ export default function CharacterList({ characters, loading }) {
   };
 
   const proxify = (url) =>
-    url.replace("https://www.swapi.tech/api", "http://localhost:5000/api");
+    url.replace("https://www.swapi.tech/api", "https://star-war-explore-backend.onrender.com/api");
 
   useEffect(() => {
     async function fetchDetails(char) {
@@ -21,7 +21,7 @@ export default function CharacterList({ characters, loading }) {
       setLoadingDetails((prev) => ({ ...prev, [id]: true }));
 
       try {
-        const res = await fetch(`http://localhost:5000/api/people/${id}`);
+        const res = await fetch(`https://star-war-explore-backend.onrender.com/api/people/${id}`);
         const json = await res.json();
         const props = json.result.properties;
 

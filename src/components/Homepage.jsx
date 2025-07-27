@@ -49,7 +49,7 @@ export default function Homepage() {
         return;
       }
 
-      const url = `http://localhost:5000/api/people?page=${page}&limit=10`;
+      const url = `https://star-war-explore-backend.onrender.com/api/people?page=${page}&limit=10`;
       const data = await fetchWithRetry(url);
 
       if (!data.results || !Array.isArray(data.results)) {
