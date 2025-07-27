@@ -1,190 +1,230 @@
 🧪 QA & Test Plan – Star Wars Explorer
-This QA/Test Plan ensures the Star Wars Explorer project meets functional and performance standards, focusing on SWAPI integration, custom enhancements, pagination, search, and UX consistency.
+This QA/Test Plan ensures the Star Wars Explorer application meets functional, performance, and user experience standards, with a focus on SWAPI integration, custom enhancements (species, homeworld, films), pagination, search, caching, and UX consistency.
 
 🎯 Objectives
-✅ Verify correct display of character data from SWAPI and custom logic
+Verify correct display of enriched character data
 
-✅ Ensure pagination and search function correctly
+Ensure pagination and search work as intended
 
-✅ Validate loading behavior and error handling
+Validate loading indicators and error handling
 
-✅ Ensure optimal user experience in edge and failure scenarios
+Guarantee responsive and intuitive user experience, even under failure or edge scenarios
 
 📋 Test Cases
 🧪 TC001 – Initial Data Load
-Precondition: Backend server running; frontend loaded
+Precondition: Backend server running, frontend opened in a browser.
 
 Steps:
 
-Load homepage without entering search or interacting with pagination
+Load the homepage without entering a search term.
+
+Wait for the data to load.
 
 Expected Result:
 
-Displays 10 characters
+10 characters displayed on page 1.
 
-Shows: name, height, mass, homeworld, species, films
+Each card shows:
 
-Missing fields default to "Unknown"
+Name, height, mass, homeworld, species, and films.
+
+Missing data fields display Unknown.
 
 Pass Criteria:
 
-No console errors
+No console errors.
 
-All expected fields rendered correctly
+Fields rendered correctly, including “Unknown” placeholders.
+
+Loading placeholders visible before content appears.
 
 🧪 TC002 – Pagination Navigation
-Precondition: More than 10 characters available
+Precondition: More than 10 characters available.
 
 Steps:
 
-Click Next from page 1
+On page 1, click Next.
 
-Click Previous from page 2
+Verify page 2 data loads.
+
+Click Previous to return to page 1.
 
 Expected Result:
 
-Navigates correctly between character sets
+Smooth navigation between pages.
 
-Pagination controls update accordingly
+Correct character sets displayed for each page.
 
 Pass Criteria:
 
-"Previous" disabled on page 1
+“Previous” button is disabled on page 1.
 
-"Next" disabled on last page
+“Next” button is disabled on the last page.
 
-Smooth navigation without glitches
+No URL change (clean URL requirement).
 
-🧪 TC003 – Search by Name
-Precondition: Character list loaded
+🧪 TC003 – Search by Name (Client-side)
+Precondition: At least 2 pages of data cached locally.
 
 Steps:
 
-Enter "Luke" in the search input
+Enter Luke in the search input.
 
-Submit search or wait for auto-filter
+Wait for filtering to complete.
 
 Expected Result:
 
-Characters with "Luke" in their name are shown
+Case-insensitive match (e.g., “luke” also works).
 
-Case-insensitive match
+Filters only from already fetched/cached pages.
 
-Pagination adjusts if fewer than 10 results
+Results update in real-time.
 
 Pass Criteria:
 
-Correct characters displayed
+Matches are displayed correctly.
 
-No duplicates or missing results
+No duplicates.
+
+Correct pagination for filtered data.
 
 🧪 TC004 – Error Handling (SWAPI Failure)
-Precondition: Simulate SWAPI failure (e.g., API returns 500 or times out)
+Precondition: Simulate SWAPI failure (e.g., stop the backend or force 500).
 
 Steps:
 
-Load homepage or search while backend is simulating failed API calls
+Refresh the homepage or trigger a search during the failure.
 
 Expected Result:
 
-Displays partial character data
+Shows fallback character cards with partial data.
 
-Missing fields show "Unknown"
+“Unknown” for missing data.
 
-A user-friendly error message is shown
+User-friendly error message shown.
 
 Pass Criteria:
 
-No frontend crashes
+No frontend crash.
 
-Proper fallback behavior in UI
+Error clearly logged in console.
 
-Error clearly logged or displayed
+Fallback data and error UI appear gracefully.
 
-🧪 TC005 – Custom Data Enhancement (Species Inference)
-Precondition: Character with missing species field is loaded (e.g., General Grievous)
+🧪 TC005 – Custom Data Enhancement (Species and Films)
+Precondition: A character with missing species or multiple films exists.
 
 Steps:
 
-Locate such a character
+Navigate to a page with such a character.
 
-Review the species field
+Inspect species and films fields.
 
 Expected Result:
 
-Species is inferred via character-URL match
+Species displayed correctly (or “Unknown”).
 
-"Unknown" used if no match
+Films list populated from resolved URLs.
 
 Pass Criteria:
 
-Correct inference where possible
+Species: Correct or “Unknown”.
 
-No incorrect data shown
+Films: Titles listed without blanks.
 
-Fields remain consistent
-
-🧪 TC006 – Performance with Large Dataset
-Precondition: Full SWAPI dataset is cached in backend
+🧪 TC006 – Performance with Cached Data
+Precondition: Browse at least 3 pages to build local cache.
 
 Steps:
 
-Search with a broad keyword (e.g., "a")
+Type a broad keyword (e.g., “a”) in search.
 
-Navigate through all result pages
+Switch between cached pages.
 
 Expected Result:
 
-Data loads in under 3 seconds
+Search operates instantly without additional backend calls.
 
-Pagination stays responsive
+Cached results appear immediately.
 
 Pass Criteria:
 
-UI remains snappy
+Search < 1 second.
 
-No delays, lags, or hangs
+No visible lag or freezes.
 
-🧪 TC007 – Loading State Shows All Data Temporarily
-Issue: All character data is briefly shown before correct data is loaded
-
-Precondition: New page is loading (e.g., search or pagination click)
+🧪 TC007 – Loading State and Placeholder Behavior
+Precondition: Trigger a data fetch by changing page or clearing search.
 
 Steps:
 
-Trigger a data fetch (e.g., by searching or clicking "Next")
+Click “Next” or enter a search term.
 
-Observe UI during the loading phase
+Observe UI during loading.
 
 Expected Result:
 
-No characters displayed until data is fully ready
+Old results are cleared.
 
-A loading spinner or text like "Loading..." is shown
+Skeleton loaders or “Loading…” appear.
+
+No stale/unfiltered data flashes.
 
 Pass Criteria:
 
-No premature rendering of unfiltered or stale data
+Loading placeholders remain visible until results are ready.
 
-Loading indicator visible during fetch
-
-🧪 TC008 – “No Characters Found” Message Appears Prematurely
-Issue: Message appears before loading completes
-
-Precondition: Start typing a valid name in the search field
+🧪 TC008 – “No Characters Found” Message Timing
+Issue Fixed: Previously shown before loading completed.
 
 Steps:
 
-Type a valid term slowly (e.g., "lu")
+Slowly type a valid search term (e.g., “lu”).
 
-Watch for "No characters found" message while loading
+Watch the results.
 
 Expected Result:
 
-Message only appears after loading finishes and there are no results
+“No characters found” appears only after:
+
+Loading is complete
+
+And there are 0 matching results
 
 Pass Criteria:
 
-Message is suppressed while loading === true
+Message does not appear during loading.
 
-Only displayed if filteredCharacters.length === 0 and loading === false
+Appears only when loading === false AND results are empty.
+
+🧪 TC009 – Clean URL Behavior
+Steps:
+
+Navigate across pages.
+
+Enter a search term.
+
+Expected Result:
+
+The browser URL remains unchanged.
+
+Search and pagination states are internal to React.
+
+Pass Criteria:
+
+No query params like ?page=2 or ?search=luke.
+
+🧪 TC010 – Data Consistency After Page Change
+Steps:
+
+Move to page 2.
+
+Return to page 1.
+
+Expected Result:
+
+Page 1 shows correct data without re-fetch delay (uses cache).
+
+Pass Criteria:
+
+Page changes back instantly using cached data.
